@@ -1,15 +1,8 @@
 import React, { Component } from "react";
-import { Platform, StyleSheet, Text, View, Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet, Text, View, Alert } from "react-native";
 import axios from 'axios';
 
-const API_URL ='';
-// let unix_timestamp = 158186303421.4758
-// var date = new Date(unix_timestamp * 1000);
-// var hours = date.getHours();
-// var minutes = "0" + date.getMinutes();
-// var seconds = "0" + date.getSeconds();
-// var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-// console.log(formattedTime);
+const API_URL ='http://localhost:5000/api/ubicacion';
 
 export default class App extends Component {
   state = {
@@ -19,32 +12,47 @@ export default class App extends Component {
   encontrarCoordenadas = () => {
     navigator.geolocation.getCurrentPosition(
       posicion => {
-        const coordenadas = JSON.stringify(posicion);
-        //alert(coordenadas);
+        const longitud = JSON.stringify(posicion.coords.longitude);
+        const latitud = JSON.stringify(posicion.coords.latitude);
+        const user_name= "Juan Rojas";
 
-        this.setState({ coordenadas });
+
+        this.setState({ longitud, latitud });
+
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        const yyyy = today.getFullYear();
+        
+        const actual = yyyy + '-' + mm + '-' + dd;
+        this.setState({ fecha : actual })
+
+        const data = JSON.stringify({
+          user_name: "Juan Rojas",
+          latitud: this.state.latitud,
+          longitud: this.state.longitud,
+          fecha: this.state.fecha
+        })
+
+        return alert(JSON.stringify(data))
+        axios.post(API_URL, this.state)
+        .then(response => {
+          alert(JSON.stringify(response.data.ok))
+        })
       },
       error => Alert.alert(error.message),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   };
 
-  postData =()=>{
-    axios.post(API_URL,this.state)
-      .then(response=>{
-         console.log(response)
-      })
-      .catch(e=>{
-         console.log(e)
-    });
-  }
-
   render() {
     return (
       <View style={estilos.contenedor}>
         <TouchableOpacity onPress={this.encontrarCoordenadas}>
-          <Text style={estilos.texto}>Donde Estoy?</Text>
-          <Text>ubicacion: {this.state.coordenadas}</Text>
+          <Text style={estilos.texto}>Ubicación</Text>
+          <Text>Longitud: {this.state.longitud}</Text>
+          <Text>Latitud: {this.state.latitud}</Text>
+          <Text>Usuario: {this.state.user_name}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -62,5 +70,9 @@ const estilos = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     margin: 10
+  },
+  boton:{
+    backgroundColor: "#367698",
+    color: "white"
   }
 });

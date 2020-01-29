@@ -17,6 +17,7 @@ router.get('/ubicacion', (req, res, next) => {
 
 router.post('/ubicacion', (req, res, next) => {
     const datos = {
+        user_name:req.body.user_name,
         longitud: req.body.longitud,
         latitud: req.body.latitud,
         fecha: req.body.fecha,

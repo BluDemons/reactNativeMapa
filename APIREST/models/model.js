@@ -8,7 +8,8 @@ module.exports = db.sequelize.define("ubicaciones", {
         autoIncrement: true,
         primaryKey: true
     },
+    user_name: Sequelize.STRING,
     latitud: Sequelize.STRING,
     longitud: Sequelize.STRING,
-    fecha: Sequelize.TIME
+    fecha: Sequelize.DATE
 });
